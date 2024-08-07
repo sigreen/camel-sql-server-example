@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: camel-sql-server-example
+    region: us-east1
+  name: camel-sql-server-example
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: camel-sql-server-example
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: camel-sql-server-example
+        region: us-east1
+    spec:
+      containers:
+      - image: simongreen02/camel-sql-server-example:1.0.2
+        imagePullPolicy: Always
+        name: camel-sql-server-example
+        ports:
+        - containerPort: 8080
+        resources: {}
+status: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: camel-sql-server-example
+  name: camel-sql-server-example
+spec:
+  type: ClusterIP
+  selector:
+    app: camel-sql-server-example
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 8080

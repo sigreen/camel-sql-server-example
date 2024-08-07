@@ -1,0 +1,80 @@
+apiVersion: networking.gloo.solo.io/v2
+kind: ExternalService
+metadata:
+  labels:
+  name: external-sqlserver
+  namespace: gloo-mesh
+spec:
+  hosts:
+  - external-sqlserver.mesh
+  ports:
+  - name: tcp
+    number: 1433
+    protocol: TCP
+  selector:
+    external-endpoint: external-sqlserver
+---
+apiVersion: networking.gloo.solo.io/v2
+kind: ExternalEndpoint
+metadata:
+  labels:
+    external-endpoint: external-sqlserver
+  name: external-sqlserver-central
+  namespace: gloo-mesh
+spec:
+  address: >-
+   35.192.82.169
+  locality:
+    region: us-central1
+  ports:
+    - name: tcp
+      number: 1433
+---
+apiVersion: networking.gloo.solo.io/v2
+kind: ExternalEndpoint
+metadata:
+  labels:
+    external-endpoint: external-sqlserver
+  name: external-sqlserver-east
+  namespace: gloo-mesh
+spec:
+  address: >-
+   104.196.187.242
+  locality:
+    region: us-east1
+  ports:
+    - name: tcp
+      number: 1433
+---
+apiVersion: resilience.policy.gloo.solo.io/v2
+kind: FailoverPolicy
+metadata:
+  name: external-sqlserver
+  namespace: gloo-mesh
+spec:
+  applyToDestinations:
+  - kind: EXTERNAL_SERVICE
+    selector:
+      name: external-sqlserver
+      namespace: gloo-mesh
+  config:
+    localityMappings: []
+---
+apiVersion: resilience.policy.gloo.solo.io/v2
+kind: OutlierDetectionPolicy
+metadata:
+  annotations:
+    cluster.solo.io/cluster: ""
+  name: outlier-detection
+  namespace: gloo-mesh
+spec:
+  applyToDestinations:
+  - kind: EXTERNAL_SERVICE
+    selector:
+      name: external-sqlserver
+      namespace: gloo-mesh
+  config:
+    baseEjectionTime: 30s
+    consecutiveErrors: 2
+    interval: 1s
+    maxEjectionPercent: 100
