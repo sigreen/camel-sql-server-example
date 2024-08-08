@@ -53,15 +53,15 @@ mvn clean spring-boot:build-image
 2. Login to your public DockerHub repo (using the push commands popup), then tag the docker image and push it to the the repo using your correct repo ID:
 
 ```bash
-docker tag docker.io/library/camel-sql-server-example:1.0.2 simongreen02/camel-sql-server-example:1.0.2
-docker push simongreen02/camel-sql-server-example:1.0.2
+docker tag docker.io/library/camel-sql-server-example:1.0.6 simongreen02/camel-sql-server-example:1.0.6
+docker push simongreen02/camel-sql-server-example:1.0.6
 ```
 3. Update the repo ID in `src/k8s/deployment.yaml` to point to the correct ECR repo:
 
 ```yaml
     spec:
       containers:
-      - image: simongreen02/camel-sql-server-example:1.0.2
+      - image: simongreen02/camel-sql-server-example:1.0.6
         name: camel-sql-server-example
         resources: {}
 status: {}
